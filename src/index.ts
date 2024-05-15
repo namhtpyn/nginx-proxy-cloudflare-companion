@@ -33,6 +33,7 @@ const job = new CronJob(
           console.log(`Updated ${domain} to ${ipv4}`);
           successDomains.push(domain);
         } catch (e) {
+          console.log(`failed ${domain} to ${ipv4}`);
           console.log(e);
         }
       }
