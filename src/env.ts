@@ -6,5 +6,8 @@ export const containerEnvSchema = z.object({
     .string()
     .min(3)
     .transform((domains) => domains.split(",")),
-  CF_ENABLE: z.coerce.boolean().refine((value) => value === true),
+  CF_ENABLE: z
+    .enum(["true", "false"])
+    .transform((value) => value === "true")
+    .refine((value) => value === true),
 });
