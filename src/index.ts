@@ -20,6 +20,7 @@ const job = new CronJob(
         containers.flatMap((container) => {
           const env = containerEnvSchema.safeParse(Object.fromEntries(container.Config.Env.map((e) => e.split("="))));
           if (!env.success) return [];
+          console.log(env.data);
           return env.data.VIRTUAL_HOST;
         }),
       );
