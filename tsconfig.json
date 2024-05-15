@@ -1,0 +1,32 @@
+{
+  "compilerOptions": {
+    /* Base options */
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "target": "ESNext",
+    "verbatimModuleSyntax": true,
+    "allowJs": false,
+    "resolveJsonModule": true,
+    "moduleDetection": "force",
+    "baseUrl": "./",
+    "outDir": "./dist",
+
+    /*strictness*/
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "noFallthroughCasesInSwitch": true,
+
+    /* transpile with tsc*/
+    "moduleResolution": "NodeNext",
+    "module": "NodeNext",
+    "noEmit": false,
+    "sourceMap": true,
+
+    "lib": ["esnext"],
+
+    /*build app*/
+    "removeComments": true,
+    "declaration": false,
+    "declarationMap": false
+  }
+}

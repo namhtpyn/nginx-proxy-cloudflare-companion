@@ -1,0 +1,13 @@
+version: "3.8"
+services:
+  deafgaefea:
+    image: node
+    command: sleep infinity
+    environment:
+      VIRTUAL_HOST: hehehe.namhoang.net
+      CF_ENABLE: true
+    networks:
+      - hello
+
+networks:
+  hello:
