@@ -1,16 +1,12 @@
-import Dockerode from "dockerode";
 import { publicIpv4 } from "public-ip";
 import { CronJob } from "cron";
 import { containerEnvSchema } from "./env.js";
 import { useCloudflare } from "./cloudflare.js";
+import { useDocker } from "./docker.js";
 
-const docker = new Dockerode();
 const cloudflare = useCloudflare();
-
-const cache = {
-  ipv4: "",
-  containerIds: [] as string[],
-};
+const docker = useDocker();
+let cacheDomains: string[] = [];
 
 const job = new CronJob(
   //every minute
@@ -19,30 +15,45 @@ const job = new CronJob(
     try {
       console.log("Running job");
       const ipv4 = await publicIpv4();
-      if (cache.ipv4 === ipv4) return;
-      cache.ipv4 = ipv4;
+      const containers = await docker.getRunningContainers();
+      const domains = new Set(
+        containers.flatMap((container) => {
+          const env = containerEnvSchema.safeParse(Object.fromEntries(container.Config.Env.map((e) => e.split("="))));
+          if (!env.success) return [];
+          return env.data.VIRTUAL_HOST;
+        }),
+      );
 
-      const runningContainers = await docker.listContainers();
+      const successDomains: string[] = [];
+      for (const domain of domains) {
+        if (cacheDomains.includes(domain)) continue;
 
-      const ids = runningContainers.map((container) => container.Id);
-      const hasNewContainer = ids.filter((id) => !cache.containerIds.includes(id)).length > 0;
-      if (!hasNewContainer) return;
-      cache.containerIds = ids;
+        try {
+          await cloudflare.updateRecord({ domain, ipv4 });
+          console.log(`Updated ${domain} to ${ipv4}`);
+          successDomains.push(domain);
+        } catch (e) {
+          console.log(e);
+        }
+      }
 
-      for (const container of runningContainers) {
-        const containerInfo = await docker.getContainer(container.Id).inspect();
+      //remove domains from cacheDomains that are not in domains and add successDomains
+      cacheDomains = cacheDomains.filter((domain) => domains.has(domain)).concat(successDomains);
+
+      for (const container of containers) {
         const env = await containerEnvSchema.safeParseAsync(
-          Object.fromEntries(containerInfo.Config.Env.map((e) => e.split("="))),
+          Object.fromEntries(container.Config.Env.map((e) => e.split("="))),
         );
 
         if (!env.success) continue;
 
-        await cloudflare.updateRecord({ domain: env.data.VIRTUAL_HOST, ipv4 });
-
-        console.log(`Updated ${env.data.VIRTUAL_HOST} to ${ipv4}`);
+        for (const domain of env.data.VIRTUAL_HOST) {
+          await cloudflare.updateRecord({ domain, ipv4 });
+          console.log(`Updated ${domain} to ${ipv4}`);
+        }
       }
-    } catch (e) {
-      console.log(e);
+    } catch (err) {
+      console.log(err);
     }
   },
 );
