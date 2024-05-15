@@ -23,4 +23,6 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/nginx-proxy-cloudflare-companion:$(date +%s)
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/nginx-proxy-cloudflare-companion:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/nginx-proxy-cloudflare-companion:${{ github.run_number }}
