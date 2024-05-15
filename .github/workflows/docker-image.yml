@@ -22,4 +22,6 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           push: true
-          tags: namhtpyn/nginx-proxy-cloudflare-companion:latest,namhtpyn/nginx-proxy-cloudflare-companion:$(date +%s)
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/nginx-proxy-cloudflare-companion:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/nginx-proxy-cloudflare-companion:$(date +%s)
