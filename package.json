@@ -1,9 +1,8 @@
 {
   "name": "nginx-proxy-cloudflare-companion",
   "version": "1.0.0",
-  "description": "A simple node.js proxy server that forwards requests to a specified URL",
+  "description": "a cloudflare companion for nginx-proxy",
   "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
   "type": "module",
   "scripts": {
     "build": "tsc",

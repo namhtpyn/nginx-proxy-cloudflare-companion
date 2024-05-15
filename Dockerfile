@@ -1,5 +1,5 @@
 #BUILD FROM NODE 20
-FROM node:22-slim as base
+FROM node:22-alpine as base
 RUN corepack enable
 
 
