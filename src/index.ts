@@ -40,19 +40,6 @@ const job = new CronJob(
 
       //remove domains from cacheDomains that are not in domains and add successDomains
       cacheDomains = cacheDomains.filter((domain) => domains.has(domain)).concat(successDomains);
-
-      for (const container of containers) {
-        const env = await containerEnvSchema.safeParseAsync(
-          Object.fromEntries(container.Config.Env.map((e) => e.split("="))),
-        );
-
-        if (!env.success) continue;
-
-        for (const domain of env.data.VIRTUAL_HOST) {
-          await cloudflare.updateRecord({ domain, ipv4 });
-          console.log(`Updated ${domain} to ${ipv4}`);
-        }
-      }
     } catch (err) {
       console.log(err);
     }
