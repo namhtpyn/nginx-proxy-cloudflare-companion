@@ -4,7 +4,7 @@ import { getDomain } from "tldts";
 export const useCloudflare = () => {
   const cloudflare = new Cloudflare();
 
-  const updateRecord = async (params: { domain: string; ipv4: string }) => {
+  const updateRecord = async (params: { domain: string; ipv4: string, proxied: boolean }) => {
     const zoneName = getDomain(params.domain);
     if (!zoneName) return;
 
@@ -20,7 +20,7 @@ export const useCloudflare = () => {
         zone_id: zone.id,
         name: params.domain,
         content: params.ipv4,
-        proxied: true,
+        proxied: params.proxied,
         type: "A",
       });
     } else {
@@ -28,7 +28,7 @@ export const useCloudflare = () => {
         zone_id: zone.id,
         name: params.domain,
         content: params.ipv4,
-        proxied: true,
+        proxied: params.proxied,
         type: "A",
       });
     }

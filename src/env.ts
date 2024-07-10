@@ -10,4 +10,7 @@ export const containerEnvSchema = z.object({
     .enum(["true", "false"])
     .transform((value) => value === "true")
     .refine((value) => value === true),
+  CF_PROXY_DISABLE: z
+    .enum(["true", "false"])
+    .transform((value) => value === "true"),
 });
